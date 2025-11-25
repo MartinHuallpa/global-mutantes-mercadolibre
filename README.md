@@ -173,7 +173,8 @@ Total: **35 tests**, cumpliendo con la rúbrica de “35+”.
 Incluí tu captura aquí:
 
 ```
-📌 Insertar imagen de Jacoco
+<img width="1440" height="294" alt="Captura de pantalla 2025-11-25 a la(s) 11 04 48" src="https://github.com/user-attachments/assets/b2fd4004-2f64-454b-b545-edbdac3bd158" />
+
 ```
 
 La cobertura global del proyecto es **≥90%**, cumpliendo la categoría “Excelente”.
@@ -185,7 +186,8 @@ La cobertura global del proyecto es **≥90%**, cumpliendo la categoría “Exce
 Incluí tu imagen exportada aquí:
 
 ```
-📌 Insertar imagen del diagrama de secuencia
+<img width="1540" height="1215" alt="DS-MartinHuallpa" src="https://github.com/user-attachments/assets/3fba8743-f880-4744-ad8c-386ef432c6ca" />
+
 ```
 
 ---
