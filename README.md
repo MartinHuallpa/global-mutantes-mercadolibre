@@ -254,7 +254,115 @@ Este proyecto cumple con todos los ítems evaluados:
 
 ---
 
-## 13. Autor
+Perfecto, Guille.
+La **opción 1 (redirección automática al Swagger)** es la más profesional y evita confusiones con el Whitelabel Page. El profesor va a entrar al link de Render y lo va a llevar **directo a la documentación de la API**, como corresponde.
+
+Apenas agregues el controlador, la URL raíz va a redirigir a:
+
+```
+/swagger-ui/index.html
+```
+
+Así que tu aplicación quedará impecable para evaluación.
+
+---
+
+# 📌 Acá tenés el controlador EXACTO para copiar:
+
+### `HomeController.java`
+
+```java
+package org.global.mutantes_ds.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class HomeController {
+
+    @GetMapping("/")
+    public String redirectToSwagger() {
+        return "redirect:/swagger-ui/index.html";
+    }
+}
+```
+
+Esto funciona tanto local como en Render.
+
+---
+
+## **13. Deploy en Render (Producción)**
+
+La aplicación fue desplegada en la plataforma Render usando el repositorio público del proyecto.
+Se configuró un servicio del tipo **Web Service**, con build automatizado a partir de cada push en el branch `main`.
+
+### **13.1 Redirección automática al Swagger**
+
+La URL raíz del servicio Render no contiene ningún endpoint REST, por lo que normalmente mostraría una *Whitelabel Error Page*.
+Para evitar confusiones en la evaluación, se implementó un controlador que redirige automáticamente:
+
+```
+GET /
+→ redirect:/swagger-ui/index.html
+```
+
+Esto permite que cualquier usuario (incluido el docente evaluador) acceda directamente a la documentación completa de la API, sin necesidad de conocer manualmente la ruta del Swagger.
+
+Controlador utilizado:
+
+```java
+@Controller
+public class HomeController {
+    @GetMapping("/")
+    public String redirectToSwagger() {
+        return "redirect:/swagger-ui/index.html";
+    }
+}
+```
+
+---
+
+### **13.2 URL de producción**
+
+Toda la aplicación REST se encuentra desplegada y disponible en:
+
+**🔗 URL principal (redirige automáticamente al Swagger):**
+[https://global-mutantes-mercadolibre.onrender.com/](https://global-mutantes-mercadolibre.onrender.com/)
+
+**🔗 Swagger UI (documentación interactiva):**
+[https://global-mutantes-mercadolibre.onrender.com/swagger-ui/index.html](https://global-mutantes-mercadolibre.onrender.com/swagger-ui/index.html)
+
+---
+
+### **13.3 Endpoints disponibles en producción**
+
+| Método | Endpoint  | Descripción                                  |
+| ------ | --------- | -------------------------------------------- |
+| POST   | `/mutant` | Determina si un ADN pertenece a un mutante   |
+| GET    | `/stats`  | Devuelve estadísticas de análisis realizados |
+
+---
+
+### **13.4 Tecnologías utilizadas en el deploy**
+
+* Render Web Service
+* Java 21
+* Spring Boot 3
+* Dockerfile (auto-build en Render)
+* OpenAPI/Swagger para documentación
+* H2 en memoria (cada reinicio del contenedor reinicia datos)
+
+---
+
+### **13.5 Notas importantes sobre el deploy**
+
+* La base H2 no se persiste entre reinicios, lo cual es aceptado y adecuado para este examen.
+* La redirección al Swagger garantiza que el evaluador ingrese directamente a la documentación correcta.
+* El deploy fue verificado en producción y prueba correctamente los endpoints `/mutant` y `/stats`.
+
+---
+
+## 14. Autor
 
 **Martín Huallpa**
 Ingeniería en Sistemas de Información
