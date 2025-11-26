@@ -1,9 +1,11 @@
 package org.global.mutantes_ds.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
+@Slf4j
 @Component
 public class MutantDetector {
 
@@ -15,14 +17,23 @@ public class MutantDetector {
         if (dna == null || dna.length == 0)
             return false;
 
+        // Validación de tamaño máximo
+        if (dna.length > 1000)
+            return false;
+
         int n = dna.length;
 
         char[][] matrix = new char[n][n];
 
         for (int i = 0; i < n; i++) {
+
             String row = dna[i];
 
             if (row == null || row.length() != n)
+                return false;
+
+            // Segunda validación de tamaño (columnas)
+            if (row.length() > 1000)
                 return false;
 
             for (char c : row.toCharArray()) {
@@ -82,6 +93,10 @@ public class MutantDetector {
             if (m[r][c] != base)
                 return false;
         }
+
+        // Secuencia encontrada: loggeo dirección y ubicación
+        log.debug("Secuencia encontrada con dirección ({}, {}) iniciando en ({}, {})",
+                dRow, dCol, row, col);
 
         return true;
     }

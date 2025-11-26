@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
@@ -40,7 +42,20 @@ public class MutantController {
     )
     public ResponseEntity<Void> checkMutant(@Valid @RequestBody DnaRequest request) {
 
-        boolean isMutant = mutantService.analyzeDna(request.getDna());
+        String[] dna = request.getDna();
+
+        // Validación básica del array recibido
+        if (dna == null || dna.length == 0) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Validación de tamaño máximo permitido (1000x1000)
+        // Evita procesar matrices excesivamente grandes
+        if (dna.length > 1000 || dna[0].length() > 1000) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        boolean isMutant = mutantService.analyzeDna(dna);
 
         // 200 → mutante
         // 403 → humano
@@ -55,7 +70,7 @@ public class MutantController {
     @GetMapping("/stats")
     @Operation(
             summary = "Devuelve estadísticas sobre los ADN analizados",
-            description = "Muestra la cantidad de mutantes, humanos y el ratio entre ambos.",
+            description = "Permite obtener estadísticas completas o filtradas por rango de fecha.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -64,7 +79,39 @@ public class MutantController {
                     )
             }
     )
-    public ResponseEntity<StatsResponse> getStats() {
-        return ResponseEntity.ok(statsService.getStats());
+    public ResponseEntity<StatsResponse> getStats(
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate
+    ) {
+
+        // Si no viene rango, retorna estadísticas completas
+        if (startDate == null || endDate == null) {
+            return ResponseEntity.ok(statsService.getStats());
+        }
+
+        // Estadísticas filtradas por fecha
+        return ResponseEntity.ok(statsService.getStats(startDate, endDate));
+    }
+
+    // -------------------------------------------------------------
+    // DELETE /mutant/{hash} → elimina un registro de ADN
+    // -------------------------------------------------------------
+    @DeleteMapping("/mutant/{hash}")
+    @Operation(
+            summary = "Elimina un ADN analizado por su hash",
+            description = "Permite eliminar un registro previamente guardado en la base de datos.",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Eliminado correctamente"),
+                    @ApiResponse(responseCode = "404", description = "No existe un ADN con ese hash")
+            }
+    )
+    public ResponseEntity<Void> deleteMutant(@PathVariable String hash) {
+
+        try {
+            mutantService.deleteByHash(hash);
+            return ResponseEntity.noContent().build(); // 204
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+        }
     }
 }
