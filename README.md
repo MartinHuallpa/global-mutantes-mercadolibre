@@ -156,6 +156,9 @@ Respuestas:
 http://localhost:8080/swagger-ui/index.html
 ```
 
+<img width="1440" height="716" alt="Swagger" src="https://github.com/user-attachments/assets/d4707a65-a8af-4eb3-af41-660a2d77b6e7" />
+
+
 ### OpenAPI JSON
 
 ```
@@ -203,7 +206,7 @@ Total: **35 tests**, cumpliendo exacto con lo solicitado.
 
 # 10. Diagrama de Secuencia
 
-### 📌 Inserte aquí la imagen final del DS
+<img width="1627" height="2094" alt="pLZDRjj64BxpAURKKaKSkMuQe0RQc9PeMwai6YJjja0k6t8iBK3kEhjB9suHe7s6F46FFVJKHz2Rz4awkwHaog839R2Cwc3HovcTsVc--LaTQCEKgSh2CzmK2CCm3GTf5DC3d9wdmIGD4_Ztzmymv6ogMCaWHqWmgr1adC50bbS56Wd-1IhDv_y8EEA25JtFOvcH2WO5Hs7Gyxw4hnxaGnjzx7Cq6gTn176GXZ0UdOxIXpFS" src="https://github.com/user-attachments/assets/f61275cb-90b2-43b8-bac6-4dbb15f77a4e" />
 
 Este DS representa el flujo completo:
 
@@ -249,7 +252,7 @@ http://localhost:8080/h2-console
 | User     | `sa`                    |
 | Password | *(vacío)*               |
 
-### 📌 Insertar captura de la consola H2 aquí
+<img width="1440" height="342" alt="H2" src="https://github.com/user-attachments/assets/afa411ab-1dc2-4eb6-8748-9230844ec6e8" />
 
 ---
 
