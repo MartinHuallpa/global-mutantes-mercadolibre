@@ -3,6 +3,7 @@ package org.global.mutantes_ds.service;
 import lombok.RequiredArgsConstructor;
 import org.global.mutantes_ds.dto.StatsResponse;
 import org.global.mutantes_ds.repository.DnaRecordRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ public class StatsService {
 
     private final DnaRecordRepository dnaRecordRepository;
 
+    @Cacheable("stats") // Cachea el resultado general de /stats para evitar recalcular en cada request
     public StatsResponse getStats() {
 
         long mutants = dnaRecordRepository.countByIsMutant(true);
@@ -29,9 +31,11 @@ public class StatsService {
         return new StatsResponse(mutants, humans, ratio);
     }
 
+    // Cachea las estadísticas filtradas según el rango de fechas
+    // La cache key está formada por los dos parámetros
+    @Cacheable(value = "statsByDate", key = "{#startDate, #endDate}")
     public StatsResponse getStats(LocalDateTime startDate, LocalDateTime endDate) {
 
-        // Si faltan fechas, se retorna la estadística general
         if (startDate == null || endDate == null) {
             return getStats();
         }

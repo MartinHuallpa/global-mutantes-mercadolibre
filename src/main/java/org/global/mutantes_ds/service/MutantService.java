@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.global.mutantes_ds.entity.DnaRecord;
 import org.global.mutantes_ds.exception.DnaHashCalculationException;
 import org.global.mutantes_ds.repository.DnaRecordRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -19,30 +22,32 @@ public class MutantService {
     private final MutantDetector mutantDetector;
     private final DnaRecordRepository dnaRecordRepository;
 
+    @Async
     @Transactional
-    public boolean analyzeDna(String[] dna) {
+    @CacheEvict(value = { "stats", "statsByDate" }, allEntries = true)
+    public CompletableFuture<Boolean> analyzeDna(String[] dna) {
 
         String hash = calculateDnaHash(dna);
 
-        // Si ya existe en DB → devolver resultado cacheado
-        return dnaRecordRepository.findByDnaHash(hash)
+        boolean result = dnaRecordRepository.findByDnaHash(hash)
                 .map(DnaRecord::isMutant)
                 .orElseGet(() -> {
 
-                    // Ejecutar algoritmo
                     boolean isMutant = mutantDetector.isMutant(dna);
 
-                    // Guardar registro
                     DnaRecord record = DnaRecord.builder()
                             .dnaHash(hash)
                             .isMutant(isMutant)
-                            .createdAt(LocalDateTime.now()) // fecha de creación
+                            .createdAt(LocalDateTime.now())
                             .build();
 
                     dnaRecordRepository.save(record);
 
                     return isMutant;
                 });
+
+        // Devuelve el resultado envuelto en un Future para cumplir con el modo asíncrono
+        return CompletableFuture.completedFuture(result);
     }
 
     public String calculateDnaHash(String[] dna) {

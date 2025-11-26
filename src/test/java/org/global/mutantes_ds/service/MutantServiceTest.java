@@ -25,10 +25,6 @@ class MutantServiceTest {
         service = new MutantService(detector, repository);
     }
 
-    // ============================================================
-    // 1. Guarda mutante nuevo
-    // ============================================================
-
     @Test
     void shouldSaveNewMutantDna() {
         String[] dna = {"AAAA", "TTTT", "CCCC", "GGGG"};
@@ -36,16 +32,11 @@ class MutantServiceTest {
         when(repository.findByDnaHash(anyString())).thenReturn(Optional.empty());
         when(detector.isMutant(dna)).thenReturn(true);
 
-        boolean result = service.analyzeDna(dna);
+        boolean result = service.analyzeDna(dna).join(); // FIX
 
         assertTrue(result);
-
         verify(repository).save(any(DnaRecord.class));
     }
-
-    // ============================================================
-    // 2. Guarda humano nuevo
-    // ============================================================
 
     @Test
     void shouldSaveNewHumanDna() {
@@ -54,15 +45,11 @@ class MutantServiceTest {
         when(repository.findByDnaHash(anyString())).thenReturn(Optional.empty());
         when(detector.isMutant(dna)).thenReturn(false);
 
-        boolean result = service.analyzeDna(dna);
+        boolean result = service.analyzeDna(dna).join(); // FIX
 
         assertFalse(result);
         verify(repository).save(any(DnaRecord.class));
     }
-
-    // ============================================================
-    // 3. Usa cache si ADN ya existe
-    // ============================================================
 
     @Test
     void shouldReturnCachedResultIfDnaExists() {
@@ -75,20 +62,15 @@ class MutantServiceTest {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        when(repository.findByDnaHash(hash)).thenReturn(Optional.of(record));
         when(repository.findByDnaHash(anyString())).thenReturn(Optional.of(record));
 
-        boolean result = service.analyzeDna(new String[]{"AAAA"});
+        boolean result = service.analyzeDna(new String[]{"AAAA"}).join(); // FIX
 
         assertTrue(result);
 
         verify(detector, never()).isMutant(any());
         verify(repository, never()).save(any());
     }
-
-    // ============================================================
-    // 4. Hash consistente
-    // ============================================================
 
     @Test
     void shouldGenerateConsistentHashForSameDna() {
@@ -100,10 +82,6 @@ class MutantServiceTest {
         assertEquals(hash1, hash2);
     }
 
-    // ============================================================
-    // 5. Guarda hash correcto
-    // ============================================================
-
     @Test
     void shouldSaveRecordWithCorrectHash() {
         String[] dna = {"ATGC", "CAGT", "TTAT", "AGAC"};
@@ -111,7 +89,7 @@ class MutantServiceTest {
         when(repository.findByDnaHash(anyString())).thenReturn(Optional.empty());
         when(detector.isMutant(dna)).thenReturn(false);
 
-        service.analyzeDna(dna);
+        service.analyzeDna(dna).join(); // FIX
 
         ArgumentCaptor<DnaRecord> captor = ArgumentCaptor.forClass(DnaRecord.class);
         verify(repository).save(captor.capture());

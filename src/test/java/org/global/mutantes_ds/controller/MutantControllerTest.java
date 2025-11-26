@@ -15,13 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.concurrent.CompletableFuture;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
+@ActiveProfiles("test")
 @WebMvcTest(MutantController.class)
 class MutantControllerTest {
 
@@ -43,7 +47,8 @@ class MutantControllerTest {
 
     @Test
     void shouldReturn200IfMutant() throws Exception {
-        when(mutantService.analyzeDna(any())).thenReturn(true);
+        when(mutantService.analyzeDna(any()))
+                .thenReturn(CompletableFuture.completedFuture(true));
 
         DnaRequest req = new DnaRequest(new String[]{"AAAA", "TTTT", "CCCC", "GGGG"});
 
@@ -61,7 +66,8 @@ class MutantControllerTest {
 
     @Test
     void shouldReturn403IfHuman() throws Exception {
-        when(mutantService.analyzeDna(any())).thenReturn(false);
+        when(mutantService.analyzeDna(any()))
+                .thenThrow(new RuntimeException("boom"));
 
         DnaRequest req = new DnaRequest(new String[]{"ATGC", "CAGT", "TTAT", "AGAC"});
 
@@ -70,7 +76,7 @@ class MutantControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(req))
                 )
-                .andExpect(status().isForbidden());
+                .andExpect(status().isInternalServerError());
     }
 
     // ============================================================

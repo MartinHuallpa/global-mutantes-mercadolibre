@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping
@@ -55,7 +56,8 @@ public class MutantController {
             return ResponseEntity.badRequest().build();
         }
 
-        boolean isMutant = mutantService.analyzeDna(dna);
+        CompletableFuture<Boolean> future = mutantService.analyzeDna(dna);
+        boolean isMutant = future.join(); // obtiene el resultado del procesamiento asíncrono
 
         // 200 → mutante
         // 403 → humano
